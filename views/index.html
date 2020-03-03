@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sudoku Solver</title>
+    <meta
+      name="description"
+      content="An example for the fCC QA Sudoku Solver project"
+    />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../public/style.css" type="text/css" />
+  </head>
+  <body>
+    <header>
+      <h1>
+        ISQA_4 - Sudoku Solver
+      </h1>
+    </header>
+    <div id="userstories" style="margin-left: 5%; margin-top: 5%">
+      <h3>User Stories</h3>
+      <ol>
+        <li>
+          I can enter a sudoku puzzle by filling in the text area with either a
+          number or period (".") to represent an empty cell. When a valid number
+          is entered in the text area, the same number is applied to the correct
+          cell of the sudoku grid.
+        </li>
+        <li>
+          I can enter a sudoku puzzle by adding numbers directly to the sudoku
+          grid. When a valid number is entered in the sudoku grid, the same
+          number appears in the correct position in the text area.
+        </li>
+        <li>
+          I can solve an incomplete puzzle by clicking the "Solve" button. When
+          a solution is found, the sudoku grid is automatically populated with
+          the correct numbers for each cell.
+        </li>
+        <li>
+          I can clear the text area and sudoku grid by clicking the "Clear"
+          button.
+        </li>
+        <li>All 6 unit tests are complete and passing.</li>
+        <li>All 4 functional tests are complete and passing.</li>
+      </ol>
+    </div>
+    <hr style="margin: 25px" />
+    <div class="container">
+      <div class="form-container">
+        <textarea
+          rows="10"
+          cols="85"
+          id="text-input"
+          oninput="setGrid(this.value);"
+        ></textarea>
+        <br />
+        <input type="button" value="Solve" onclick="showSolution(solve());" />
+        <input type="button" value="Clear" onclick="clearInput();" />
+        <div id="error-msg"></div>
+      </div>
+      <div id="sudoku-grid">
+        <table class="grid">
+          <tbody>
+            <tr>
+              <td class="A1">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="A1"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="A2">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="A2"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="A3">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="A3"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="A4">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="A4"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="A5">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="A5"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="A6">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="A6"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="A7">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="A7"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="A8">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="A8"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="A9">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="A9"
+                  class="sudoku-input"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td class="B1">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="B1"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="B2">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="B2"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="B3">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="B3"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="B4">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="B4"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="B5">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="B5"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="B6">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="B6"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="B7">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="B7"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="B8">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="B8"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="B9">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="B9"
+                  class="sudoku-input"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td class="C1">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="C1"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="C2">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="C2"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="C3">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="C3"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="C4">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="C4"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="C5">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="C5"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="C6">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="C6"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="C7">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="C7"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="C8">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="C8"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="C9">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="C9"
+                  class="sudoku-input"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td class="D1">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="D1"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="D2">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="D2"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="D3">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="D3"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="D4">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="D4"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="D5">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="D5"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="D6">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="D6"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="D7">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="D7"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="D8">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="D8"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="D9">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="D9"
+                  class="sudoku-input"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td class="E1">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="E1"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="E2">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="E2"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="E3">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="E3"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="E4">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="E4"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="E5">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="E5"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="E6">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="E6"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="E7">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="E7"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="E8">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="E8"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="E9">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="E9"
+                  class="sudoku-input"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td class="F1">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="F1"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="F2">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="F2"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="F3">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="F3"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="F4">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="F4"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="F5">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="F5"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="F6">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="F6"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="F7">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="F7"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="F8">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="F8"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="F9">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="F9"
+                  class="sudoku-input"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td class="G1">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="G1"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="G2">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="G2"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="G3">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="G3"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="G4">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="G4"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="G5">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="G5"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="G6">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="G6"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="G7">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="G7"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="G8">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="G8"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="G9">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="G9"
+                  class="sudoku-input"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td class="H1">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="H1"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="H2">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="H2"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="H3">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="H3"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="H4">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="H4"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="H5">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="H5"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="H6">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="H6"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="H7">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="H7"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="H8">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="H8"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="H9">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="H9"
+                  class="sudoku-input"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td class="I1">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="I1"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="I2">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="I2"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="I3">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="I3"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="I4">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="I4"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="I5">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="I5"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="I6">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="I6"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="I7">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="I7"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="I8">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="I8"
+                  class="sudoku-input"
+                />
+              </td>
+              <td class="I9">
+                <input
+                  oninput="setTextArea()"
+                  autocomplete="disabled"
+                  type="text"
+                  size="1"
+                  maxlength="1"
+                  id="I9"
+                  class="sudoku-input"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+  <script src="../public/sudoku-solver.js"></script>
+</html>
