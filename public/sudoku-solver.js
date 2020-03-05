@@ -12,19 +12,12 @@ const setGrid = str => {
 const setTextArea = () => {
   const textArea = document.getElementById('text-input');
   const cells = Array.from(document.querySelectorAll('.sudoku-input'));
-  let str = '';
-  cells.forEach(cell => cell.value !== '' && validSudokuInput(cell.value) ? str += cell.value : str += '.');
-  
-  return textArea.value = str;
+  return textArea.value = cells.reduce((str, {value}) => {value !== '' && validSudokuInput(value) ? str += value : str += '.'; return str}, '');
 }
 
 const validSudokuInput = str => {
   const possibleNum = parseInt(str);
-  if (possibleNum >= 1 && possibleNum <= 9) {
-    return str;
-  } else {
-    return false;
-  }
+  return (possibleNum >= 1 && possibleNum <= 9) && str;
 }
 
 const reference = () => {
@@ -47,19 +40,18 @@ const reference = () => {
   const coords = combine(rows, cols);
   const rowUnits = rows.map(row => combine(row, cols));
   const colUnits = cols.map(col => combine(rows, col));
-  const boxUnits = rowSquare.reduce((acc, curr, i, arr) => {
+  const boxUnits = rowSquare.reduce((acc, curr) => {
     colSquare.forEach((col, j) => {
-      acc.push(combine(arr[i], colSquare[j]))
+      acc.push(combine(curr, colSquare[j]))
     });
     
     return acc;
   }, []);
   
   const allUnits = rowUnits.concat(colUnits, boxUnits);
-  let groups = {};
-  
+  const groups = {};
   /* 
-    Generate an array of three units (row, col, and box) for each 
+    Generate an array of the three units (row, col, and box) that contain a single
     cell/coordinate. Each unit has a length of 9.
   */
   groups.units = coords.reduce((acc, currCell) => {
@@ -73,7 +65,6 @@ const reference = () => {
     
     return acc;
   }, {});
-  
   /* 
     Generate a list of peers for each cell/coordinate, which
     is a list of all cells in the three units *except* the cell
@@ -90,6 +81,7 @@ const reference = () => {
     
     return acc;
   }, {});
+  
   
   return {
     coords,
@@ -120,6 +112,8 @@ const parsePuzzle = str => {
     return valueMap;
   } else {
     errorDiv.innerText = "Error: Expected puzzle to be 81 numbers long.";
+    // explicitly returning null so we can handle that case when it's called
+    return null;
   }
 }
 
@@ -129,7 +123,8 @@ const solve = (puzzle = document.getElementById('text-input').value) => {
   */
   const digits = '123456789';
   let inputGrid = parsePuzzle(puzzle);
-  
+  // Bail out if the puzzle is not valid
+  if(!inputGrid) return null;
   // Filter out cells with no value
   inputGrid = Object.keys(inputGrid).reduce((acc, key) => {
     const currVal = inputGrid[key];
@@ -145,104 +140,94 @@ const solve = (puzzle = document.getElementById('text-input').value) => {
 
     return acc;
   }, {});
-  
-  const confirmValue = (grid, pos, val) => {
-
-    const remainingValues = grid[pos].replace(val, '');
-    
-    remainingValues.split('').forEach(val => {
-      grid = eliminate(grid, pos, val);
-    });
-
-    return grid;
-  }
-
-  const eliminate = (grid, pos, val) => {
-    if (!grid) return false;
-
-    if (!grid[pos].includes(val)) return grid; // Exit if we've already eliminated the value from the grid/cell
-
-    grid[pos] = grid[pos].replace(val, ''); // Set cell value if known, otherwise remove possibility
-
-    if (grid[pos].length === 0) { // If there are no possibilities we made a wrong guess somewhere
-      return false; 
-    } else if (grid[pos].length === 1) { // Remove known cell values from all peers recursively
-      groups.peers[pos].forEach(peer => {
-        grid = eliminate(grid, peer, grid[pos]);
-
-        if (!grid) return false;
-      });
-    }
-
-    const possibilities = groups.units[pos].reduce((acc, unit) => {
-      return unit.map(coord => {
-        if (grid[coord] && grid[coord].indexOf(val) > -1) return coord;
-      }).filter(Boolean);
-    }, []);
-
-    if (possibilities.length === 0) { // We made a mistake somewhere if there are no possible values for a coordinate
-      return false;
-    } else if (possibilities.length === 1 && grid[possibilities[0]].length > 1) { // There is only one possible position, but the grid still lists multiple possibilities, confirm the value before removing it
-      if (!confirmValue(grid, possibilities[0], val)) {
-        return false;
-      } 
-    }
-    
-    return grid;
-  }
 
   /* 
     Loop through the known positions on the input grid 
     and begin eliminating other possibilities for cells 
     without a value -- first pass of constraint propagation
   */
-  Object.keys(inputGrid).forEach(position => {
-    const value = inputGrid[position];
-
+  Object.entries(inputGrid).forEach(([position, value]) => {
     outputGrid = confirmValue(outputGrid, position, value);
   });
 
   // If puzzle is complete after first pass, return it
   if (validatePuzzle(outputGrid)) {
-    // console.log(outputGrid);
     return outputGrid;
   }
 
-  const guessDigit = grid => {
-    /* 
-      Guess a digit with the fewest number 
-      of possibilities
-    */
-    if (!grid) return false;
+  // Guess digits for incomplete puzzle
+  return guessDigit(outputGrid);
+}
+
+const confirmValue = (grid, pos, val) => {
+
+  const remainingValues = grid[pos].replace(val, '');
   
-    // End if there's a possible valid solution
-    if (validatePuzzle(grid)) return grid;
-  
-    // Sort by cells with the least number of possibilities
-    const possibilities = Object.keys(grid).reduce((acc, curr) => {
-      const output = {};
-      output[curr] = grid[curr];
-      if (grid[curr].length > 1) acc.push(output);
-  
-      return acc;
-    }, []).sort((a, b) => {
-      return a[Object.keys(a)[0]].length - b[Object.keys(b)[0]].length;
+  remainingValues.split('').forEach(val => {
+    grid = eliminate(grid, pos, val);
+  });
+
+  return grid;
+}
+
+const eliminate = (grid, pos, val) => {
+  if (!grid) return false;
+
+  if (!grid[pos].includes(val)) return grid; // Exit if we've already eliminated the value from the grid/cell
+
+  grid[pos] = grid[pos].replace(val, ''); // Set cell value if known, otherwise remove possibility
+
+  if (grid[pos].length === 0) { // If there are no possibilities we made a wrong guess somewhere
+    return false; 
+  } else if (grid[pos].length === 1) { // Remove known cell values from all peers recursively
+    groups.peers[pos].forEach(peer => {
+      grid = eliminate(grid, peer, grid[pos]);
+
+      if (!grid) return false;
     });
-  
-    const pos = Object.keys(possibilities[0])[0];
-  
-    for (let i in grid[pos]) {
-      const val = grid[pos][i];
-      const possibleSolution = guessDigit(confirmValue(Object.assign({}, grid), pos, val));
-  
-      if (possibleSolution) return possibleSolution;
-    }
   }
 
-  // Guess digits for incomplete puzzle
-  outputGrid = guessDigit(outputGrid);
-  // console.log(outputGrid);
-  return outputGrid;
+  const possibilities = groups.units[pos].reduce((acc, unit) => {
+    return unit.map(coord => {
+      if (grid[coord] && grid[coord].indexOf(val) > -1) return coord;
+    }).filter(Boolean);
+  }, []);
+
+  if (possibilities.length === 0) { // We made a mistake somewhere if there are no possible values for a coordinate
+    return false;
+  } else if (possibilities.length === 1 && grid[possibilities[0]].length > 1) { // There is only one possible position, but the grid still lists multiple possibilities, confirm the value before removing it
+    if (!confirmValue(grid, possibilities[0], val)) {
+      return false;
+    } 
+  }
+  
+  return grid;
+}
+
+const guessDigit = grid => {
+  /* 
+    Guess a digit with the fewest number 
+    of possibilities
+  */
+  if (!grid) return false;
+
+  // End if there's a possible valid solution
+  if (validatePuzzle(grid)) return grid;
+
+  // Sort by cells with the least number of possibilities
+  const possibilities = grid.filter(x => x.length > 1)
+    .sort((a, b) => {
+    return a[Object.keys(a)[0]].length - b[Object.keys(b)[0]].length;
+  });
+
+  const pos = Object.keys(possibilities[0])[0];
+
+  for (let i in grid[pos]) {
+    const val = grid[pos][i];
+    const possibleSolution = guessDigit(confirmValue(Object.assign({}, grid), pos, val));
+
+    if (possibleSolution) return possibleSolution;
+  }
 }
 
 const validatePuzzle = puzzle => {
@@ -270,22 +255,23 @@ const validatePuzzle = puzzle => {
 }
 
 const showSolution = obj => {
-  const solutionStr = Object.values(obj).join().replace(/\,/g, '');
-  
-  return setGrid(solutionStr), setTextArea();
+  // Only handle cases where the puzzle is valid
+  if(obj) {
+    const solutionStr = Object.values(obj).join().replace(/\,/g, '');
+    setGrid(solutionStr), setTextArea();
+  }
 }
 
 const clearInput = () => {
   /*
     User clicks clear button
   */
-  // Move this reference down into exported function for testing
   const textArea = document.getElementById('text-input');
   
   return textArea.value = '', setGrid('');
 }
 
-// LEAVE THIS IN BOILERPLATE! (Except for setGrid line)
+// LEAVE THIS IN BOILERPLATE! (Except for the `setGrid` line)
 document.addEventListener('DOMContentLoaded', () => {
   // Set text area with a simple puzzle
   const textArea = document.getElementById('text-input');
@@ -294,14 +280,20 @@ document.addEventListener('DOMContentLoaded', () => {
   setGrid(textArea.value);
 });
 
-// Export your functions for testing
-module.exports = {
-  validSudokuInput,
-  validatePuzzle,
-  parsePuzzle,
-  solve,
-  setTextArea,
-  setGrid,
-  clearInput,
-  showSolution
-}
+/* 
+  Export your functions for testing in Node.
+  Note: The `try` block is to prevent errors on
+  the client side
+*/
+try {
+  module.exports = {
+    validSudokuInput,
+    validatePuzzle,
+    parsePuzzle,
+    solve,
+    setTextArea,
+    setGrid,
+    clearInput,
+    showSolution
+  }
+} catch (e) {}
