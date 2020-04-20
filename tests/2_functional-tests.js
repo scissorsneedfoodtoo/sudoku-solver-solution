@@ -13,16 +13,17 @@ const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 let Solver;
 
-// Mock the DOM for testing and load Solver
-JSDOM.fromFile('./views/index.html')
-  .then((dom) => {
-    global.window = dom.window;
-    global.document = dom.window.document;
-
-    Solver = require('../public/sudoku-solver.js');
-  });
-
 suite('Functional Tests', () => {
+  suiteSetup(() => {
+    // Mock the DOM for testing and load Solver
+    return JSDOM.fromFile('./views/index.html')
+      .then((dom) => {
+        global.window = dom.window;
+        global.document = dom.window.document;
+
+        Solver = require('../public/sudoku-solver.js');
+      });
+  });
 
   suite('Text area and sudoku grid update automatically', () => {
     // Entering a valid number in the text area populates 
