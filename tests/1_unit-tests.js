@@ -9,8 +9,7 @@
 const chai = require('chai');
 const assert = chai.assert;
 
-const jsdom = require('jsdom');
-const { JSDOM } = jsdom;
+const { JSDOM } = require('jsdom');
 let Solver;
 
 suite('UnitTests', () => {

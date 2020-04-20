@@ -1,6 +1,7 @@
 const textArea = document.getElementById('text-input');
 const solveBtn = document.getElementById('solve-button');
 const clearBtn = document.getElementById('clear-button');
+const sudokuInputs = document.getElementsByClassName('sudoku-input');
 
 const setGrid = str => {
   const cells = document.querySelectorAll('.sudoku-input');
@@ -14,7 +15,6 @@ const setGrid = str => {
 }
 
 const setTextArea = () => {
-  const textArea = document.getElementById('text-input');
   const cells = Array.from(document.querySelectorAll('.sudoku-input'));
   textArea.value = cells.reduce((str, {value}) => {value !== '' && validSudokuInput(value) ? str += value : str += '.'; return str}, '');
 }
@@ -282,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   setGrid(textArea.value);
 
+  Array.from(sudokuInputs).forEach(input => input.addEventListener('input', setTextArea));
   solveBtn.addEventListener('click', () => { showSolution(solve()) }, false);
   clearBtn.addEventListener('click', clearInput, false);
 });

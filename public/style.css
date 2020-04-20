@@ -22,7 +22,6 @@ textarea {
 }
 
 #sudoku-grid {
-  margin-top: 20px;
   margin-left: 20px;
   text-align: center;
   display: inline;

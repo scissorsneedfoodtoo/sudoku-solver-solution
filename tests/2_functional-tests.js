@@ -9,20 +9,12 @@
 const chai = require("chai");
 const assert = chai.assert;
 
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
 let Solver;
 
 suite('Functional Tests', () => {
   suiteSetup(() => {
-    // Mock the DOM for testing and load Solver
-    return JSDOM.fromFile('./views/index.html')
-      .then((dom) => {
-        global.window = dom.window;
-        global.document = dom.window.document;
-
-        Solver = require('../public/sudoku-solver.js');
-      });
+    // DOM already mocked -- load sudoku solver then run tests
+    Solver = require('../public/sudoku-solver.js');
   });
 
   suite('Text area and sudoku grid update automatically', () => {
