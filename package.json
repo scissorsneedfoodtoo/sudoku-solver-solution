@@ -11,12 +11,12 @@
     "jsdom": "^15.2.1"
   },
   "devDependencies": {
-    "mocha": "^6.2.2"
+    "mocha": "^6.2.3"
   },
-	"scripts": {
-		"start": "node server.js",
-		"test": "mocha --exit --ui tdd tests/"
-	},
+  "scripts": {
+    "start": "node server.js",
+    "test": "mocha --exit --ui tdd tests/"
+  },
   "author": "",
   "license": "ISC"
 }
