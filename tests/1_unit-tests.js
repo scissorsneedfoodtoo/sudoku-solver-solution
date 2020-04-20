@@ -13,18 +13,17 @@ const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 let Solver;
 
-suite('UnitTests', () => {
-  suiteSetup(() => {
-    // Mock the DOM for testing and load Solver
-    return JSDOM.fromFile('./views/index.html')
-      .then((dom) => {
-        global.window = dom.window;
-        global.document = dom.window.document;
+// Mock the DOM for testing and load Solver
+JSDOM.fromFile('./views/index.html')
+  .then((dom) => {
+    global.window = dom.window;
+    global.document = dom.window.document;
 
-        Solver = require('../public/sudoku-solver.js');
-      });
+    Solver = require('../public/sudoku-solver.js');
   });
 
+suite('UnitTests', () => {
+  
   // Only the digits 1-9 are accepted
   // as valid input for the puzzle grid
   suite('Function validSudokuInput(input) are accepted', () => {
