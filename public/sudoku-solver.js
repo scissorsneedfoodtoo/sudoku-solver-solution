@@ -1,3 +1,7 @@
+const textArea = document.getElementById('text-input');
+const solveBtn = document.getElementById('solve-button');
+const clearBtn = document.getElementById('clear-button');
+
 const setGrid = str => {
   const cells = document.querySelectorAll('.sudoku-input');
   const numbers = str.split('');
@@ -12,7 +16,7 @@ const setGrid = str => {
 const setTextArea = () => {
   const textArea = document.getElementById('text-input');
   const cells = Array.from(document.querySelectorAll('.sudoku-input'));
-  return textArea.value = cells.reduce((str, {value}) => {value !== '' && validSudokuInput(value) ? str += value : str += '.'; return str}, '');
+  textArea.value = cells.reduce((str, {value}) => {value !== '' && validSudokuInput(value) ? str += value : str += '.'; return str}, '');
 }
 
 const validSudokuInput = str => {
@@ -117,14 +121,14 @@ const parsePuzzle = str => {
   }
 }
 
-const solve = (puzzle = document.getElementById('text-input').value) => {
+const solve = (puzzle = textArea.value) => {
   /*
     User clicks solve button
   */
   const digits = '123456789';
   let inputGrid = parsePuzzle(puzzle);
   // Bail out if the puzzle is not valid
-  if(!inputGrid) return null;
+  if (!inputGrid) return null;
   // Filter out cells with no value
   inputGrid = Object.keys(inputGrid).reduce((acc, key) => {
     const currVal = inputGrid[key];
@@ -256,7 +260,7 @@ const validatePuzzle = puzzle => {
 
 const showSolution = obj => {
   // Only handle cases where the puzzle is valid
-  if(obj) {
+  if (obj) {
     const solutionStr = Object.values(obj).join().replace(/\,/g, '');
     setGrid(solutionStr), setTextArea();
   }
@@ -274,10 +278,12 @@ const clearInput = () => {
 // LEAVE THIS IN BOILERPLATE! (Except for the `setGrid` line)
 document.addEventListener('DOMContentLoaded', () => {
   // Set text area with a simple puzzle
-  const textArea = document.getElementById('text-input');
   textArea.value = '..9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..';
   
   setGrid(textArea.value);
+
+  solveBtn.addEventListener('click', () => { showSolution(solve()) }, false);
+  clearBtn.addEventListener('click', clearInput, false);
 });
 
 /* 

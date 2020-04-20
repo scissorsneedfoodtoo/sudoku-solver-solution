@@ -17,7 +17,7 @@
         Quality Assurance 4: Sudoku Solver
       </h1>
     </header>
-    <div id="userstories" style="margin-left: 5%; margin-top: 5%">
+    <div id="user-stories">
       <h3>User Stories</h3>
       <ol>
         <li>
@@ -54,8 +54,8 @@
           oninput="setGrid(this.value);"
         ></textarea>
         <br />
-        <input type="button" value="Solve" onclick="showSolution(solve());" />
-        <input type="button" value="Clear" onclick="clearInput();" />
+        <input type="button" value="Solve" id="solve-button" />
+        <input type="button" value="Clear" id="clear-button" />
         <div id="error-msg"></div>
       </div>
       <div id="sudoku-grid">

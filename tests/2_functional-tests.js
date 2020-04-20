@@ -44,14 +44,15 @@ suite('Functional Tests', () => {
     test('Valid number in grid updates the puzzle string in the text area', done => {
       const textArea = document.getElementById('text-input');
       const gridCells = Array.from(document.querySelectorAll('.sudoku-input')).map(cell => cell);
-      // gridCells.forEach((cell, i) => i < 3 ? cell.value = (i += 1) : null);
       gridCells[0].value = '5';
       gridCells[1].value = '4';
       gridCells[2].value = '3';
-
       const expected = '543..............................................................................';
 
-      assert.strictEqual(Solver.setTextArea(), expected);
+      // Run function now that grid cells have changed
+      Solver.setTextArea();
+
+      assert.strictEqual(textArea.value, expected);
       done();
     });
   });
