@@ -2,6 +2,7 @@ const textArea = document.getElementById('text-input');
 const solveBtn = document.getElementById('solve-button');
 const clearBtn = document.getElementById('clear-button');
 const sudokuInputs = document.getElementsByClassName('sudoku-input');
+// import { puzzlesAndSolutions } from './puzzle-strings.js';
 
 const setGrid = str => {
   const cells = document.querySelectorAll('.sudoku-input');
@@ -115,7 +116,7 @@ const parsePuzzle = str => {
     errorDiv.innerText = '';
     return valueMap;
   } else {
-    errorDiv.innerText = "Error: Expected puzzle to be 81 numbers long.";
+    errorDiv.innerText = "Error: Expected puzzle to be 81 characters long.";
     // explicitly returning null so we can handle that case when it's called
     return null;
   }
