@@ -3,7 +3,7 @@
 
 ### User stories:
 
-1.  I can enter a sudoku puzzle by filling in the text area with either a number or period (".") to represent an empty cell. 
+1.  I can enter a sudoku puzzle by filling in the text area with either a number or period (.) to represent an empty cell. 
 1. When a valid number is entered in the text area, the same number is applied to the correct cell of the sudoku grid.
 1. I can enter a sudoku puzzle by adding numbers directly to the sudoku grid.
 1. When a valid number is entered in the sudoku grid, the same number appears in the correct position in the text area.
