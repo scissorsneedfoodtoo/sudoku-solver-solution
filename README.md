@@ -7,8 +7,8 @@
 1. When a valid number is entered in the text area, the same number is applied to the correct cell of the sudoku grid.
 1. I can enter a sudoku puzzle by adding numbers directly to the sudoku grid.
 1. When a valid number is entered in the sudoku grid, the same number appears in the correct position in the text area.
-1. The text area should only update the corresponding sudoku grid cell when a number between 1 and 9 are entered. Entering characters like "A" or "!" into the text area should not add them to the sudoku grid.
-1.The sudoku grid should only update the puzzle string in the text area when a number between 1 and 9 are entered into a cell. Entering characters like "?" or "0" should not change the puzzle string in the text area.
+1. The text area should only update the corresponding sudoku grid cell when a whole number between 1 and 9 is entered.
+1. The sudoku grid should only update the puzzle string in the text area when a whole number between 1 and 9 is entered into a cell.
 1. I can solve an incomplete puzzle by clicking the "Solve" button. When a solution is found, the sudoku grid and text area are automatically populated with the correct numbers for each cell in the grid or position in the text area.
 1. This sudoku solver is not expected to be able to solve every incomplete puzzle. See `/public/puzzle-strings.js` for a list of puzzle strings it should be able to solve along with their solutions.
 1. If the puzzle is not 81 numbers or periods long, append the message "Error: Expected puzzle to be 81 characters long." to the `error-msg` `div` so the text appears in red.
